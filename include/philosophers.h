@@ -14,17 +14,20 @@ typedef struct      s_philo
     int is_sleeping;
     int is_eating;
     int is_thinking;
-    int is_alive;
     int time_to_eat;
     int time_to_sleep;
     int time_to_die;
+    long int    last_meal;
+    pthread_mutex_t left_fork;
+    pthread_mutex_t *right_fork;
+    pthread_mutex_t meal;
 }                   t_philo;
 
 typedef struct      s_data
 {
     int number;
     int current;
-    int *forks;
+    int death;
     struct timeval time_begin;
     t_philo *philo;
     pthread_mutex_t lock;
@@ -39,5 +42,6 @@ int     ft_prep_forks(t_data *data);
 int     ft_atoi(const char *str);
 int     ft_isminus(char c, int *i);
 int     ft_check_value(t_data *data);
+long int    ft_gettime(void);
 
 #endif

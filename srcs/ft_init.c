@@ -14,10 +14,11 @@ int    ft_prep_philo(t_data *data, char **av)
         data->philo[i].is_eating = 0;
         data->philo[i].is_sleeping = 0;
         data->philo[i].is_thinking = 0;
-        data->philo[i].is_alive = 1;
+        data->philo[i].last_meal = ft_gettime();
         data->philo[i].time_to_die = ft_atoi(av[2]);
         data->philo[i].time_to_eat = ft_atoi(av[3]);
         data->philo[i].time_to_sleep = ft_atoi(av[4]);
+        pthread_mutex_init(&data->philo[i].meal, NULL);
         i++;
     }
     return (0);
@@ -33,13 +34,18 @@ int     ft_check_value(t_data *data)
 
 int    ft_prep_forks(t_data *data)
 {
-    data->forks = (int *)malloc(sizeof(int) * (data->number + 1));
-    if (!data->forks)
+    int i;
+
+    i = 0;
+    while (i < data->number)
     {
-        free(data->philo);
-        return (1);
+        pthread_mutex_init(&data->philo[i].left_fork, NULL);
+        if (i == data->number - 1)
+            data->philo[i].right_fork = &data->philo[0].left_fork;
+        else
+            data->philo[i].right_fork = &data->philo[i + 1].left_fork;
+        i++;
     }
-    memset(data->forks, 0, sizeof(int) * (data->number + 1));
     return (0);
 }
 
@@ -51,6 +57,7 @@ t_data *ft_init(char **av)
     err = 0;
     data = (t_data *)malloc(sizeof(t_data));
     data->number = ft_atoi(av[1]);
+    data->death = 0;
     err += ft_prep_philo(data, av);
     err += ft_prep_forks(data);
     if (err)
