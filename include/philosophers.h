@@ -11,25 +11,25 @@
 typedef struct      s_philo
 {
     int id;
+    int is_dead;
     int is_sleeping;
     int is_eating;
     int is_thinking;
+    int time_to_die;
     int time_to_eat;
     int time_to_sleep;
-    int time_to_die;
-    long int    last_meal;
     pthread_mutex_t left_fork;
     pthread_mutex_t *right_fork;
-    pthread_mutex_t meal;
+    pthread_mutex_t *write;
 }                   t_philo;
 
 typedef struct      s_data
 {
     int number;
     int current;
-    int death;
     struct timeval time_begin;
     t_philo *philo;
+    pthread_mutex_t write;
     pthread_mutex_t lock;
 }                   t_data;
 

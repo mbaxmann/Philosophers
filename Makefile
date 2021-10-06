@@ -18,7 +18,7 @@ all:    ${NAME}
 	${CC} ${FLAGS} -c -g $< -o ${<:.c=.o}
 
 ${NAME}:        ${OBJS}
-		${CC} -o ${NAME} ${LINK} ${OBJS}
+		${CC} -g -o ${NAME} ${LINK} ${OBJS}
 
 clean:
 	${RM} ${OBJS}
