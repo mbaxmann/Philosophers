@@ -26,11 +26,12 @@ int     ft_is_dead(long int last_meal, t_philo *philo, long int time_begin)
     {
         philo->is_dead = 1;
         if (!dead)
-        {
             printf("%ld %d is dead\n", ft_chrono(time_begin), philo->id);
+        if (!dead)
+        {
+            usleep(philo->time_to_die * 1000 + 1);
             dead = 1;
         }
-        usleep(philo->time_to_die * 1000 + 1);
         pthread_mutex_unlock(philo->write);
         return (1);
     }
@@ -58,6 +59,20 @@ int     ft_act(int act, long int last_meal, t_philo *philo)
     return (0);
 }
 
+void    ft_is(t_philo *philo, int i, long int time_begin)
+{
+    pthread_mutex_lock(philo->write);
+    if (i == 1)
+        printf("%ld %d has taken a fork\n", ft_chrono(time_begin), philo->id);  
+    else if (i == 2)
+        printf("%ld %d is eating\n", ft_chrono(time_begin), philo->id);
+    else if (i == 3)
+        printf("%ld %d is sleeping\n", ft_chrono(time_begin), philo->id);
+    else if (i == 4)
+        printf("%ld %d is thinking\n", ft_chrono(time_begin), philo->id);
+    pthread_mutex_unlock(philo->write); 
+}
+
 void    *ft_routine(void *param)
 {
     t_philo     *philo;
@@ -65,8 +80,6 @@ void    *ft_routine(void *param)
     long int    last_meal;
 
     philo = (t_philo *)param;
-    if (philo->id % 2 == 0)
-        usleep(philo->time_to_eat / 10);
     time_begin = ft_gettime();
     last_meal = time_begin;
     while (!philo->is_dead)
@@ -76,9 +89,7 @@ void    *ft_routine(void *param)
         pthread_mutex_lock(&philo->left_fork);
         if (ft_is_dead(last_meal, philo, time_begin))
             return (NULL);
-        pthread_mutex_lock(philo->write);
-        printf("%ld %d has taken a fork\n", ft_chrono(time_begin), philo->id);
-        pthread_mutex_unlock(philo->write);
+        ft_is(philo, 1, time_begin);
         if (ft_is_dead(last_meal, philo, time_begin))
         {
             pthread_mutex_unlock(&philo->left_fork);
@@ -90,33 +101,25 @@ void    *ft_routine(void *param)
             pthread_mutex_unlock(&philo->left_fork);
             return (NULL);
         }
-        pthread_mutex_lock(philo->write);
-        printf("%ld %d has taken a fork\n", ft_chrono(time_begin), philo->id);
-        pthread_mutex_unlock(philo->write);
+        ft_is(philo, 1, time_begin);
         if (ft_is_dead(last_meal, philo, time_begin))
         {
             pthread_mutex_unlock(&philo->left_fork);
             pthread_mutex_unlock(philo->right_fork);
             return (NULL);
         }
-        pthread_mutex_lock(philo->write);
-        printf("%ld %d is eating\n", ft_chrono(time_begin), philo->id);
-        pthread_mutex_unlock(philo->write);
+        ft_is(philo, 2, time_begin);
         ft_act(0, last_meal, philo);
         last_meal = ft_gettime();
         pthread_mutex_unlock(&philo->left_fork);
         pthread_mutex_unlock(philo->right_fork);
         if (ft_is_dead(last_meal, philo, time_begin))
             return (NULL);
-        pthread_mutex_lock(philo->write);
-        printf("%ld %d is sleeping\n", ft_chrono(time_begin), philo->id);
-        pthread_mutex_unlock(philo->write);
+        ft_is(philo, 3, time_begin);
         ft_act(1, last_meal, philo);
         if (ft_is_dead(last_meal, philo, time_begin))
             return (NULL);
-        pthread_mutex_lock(philo->write);
-        printf("%ld %d is thinking\n", ft_chrono(time_begin), philo->id);
-        pthread_mutex_unlock(philo->write);
+        ft_is(philo, 4, time_begin);
     }
     return (NULL);
 }
@@ -135,7 +138,14 @@ void    ft_philo_start(void *param)
     {
         pthread_create(th + i, NULL, &ft_routine, (void *)(data->philo + i));
         //pthread_detach(th[i]);
-        i++;
+        i += 2;
+    }
+    i = 1;
+    while (i < data->number)
+    {
+        pthread_create(th + i, NULL, &ft_routine, (void *)(data->philo + i));
+        //pthread_detach(th[i]);
+        i += 2;
     }
     i = 0;
     while (i < data->number)
