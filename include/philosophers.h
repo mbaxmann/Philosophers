@@ -12,12 +12,12 @@ typedef struct      s_philo
 {
     int id;
     int is_dead;
-    int is_sleeping;
-    int is_eating;
-    int is_thinking;
+    int is_last;
+    int hungry;
     int time_to_die;
     int time_to_eat;
     int time_to_sleep;
+    long long int time[2];
     pthread_mutex_t left_fork;
     pthread_mutex_t *right_fork;
     pthread_mutex_t *write;
@@ -33,15 +33,16 @@ typedef struct      s_data
     pthread_mutex_t lock;
 }                   t_data;
 
-t_data  *ft_init(char **av);
+t_data  *ft_init(char **av, int ac);
 void    ft_putstr_fd(char *s, int fd);
 void    ft_algo(t_data *data);
 void    *ft_routine(void *param);
-int     ft_prep_philo(t_data *data, char **av);
+void    ft_free(t_data *data);
+int     ft_prep_philo(t_data *data, char **av, int ac);
 int     ft_prep_forks(t_data *data);
 int     ft_atoi(const char *str);
 int     ft_isminus(char c, int *i);
-int     ft_check_value(t_data *data);
-long int    ft_gettime(void);
+int     ft_check_value(t_data *data, char **av, int ac);
+long long int    ft_gettime(void);
 
 #endif

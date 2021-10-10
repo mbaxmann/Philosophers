@@ -1,35 +1,35 @@
 #include "../include/philosophers.h"
 
-long int    ft_gettime(void)
+long long int    ft_gettime(void)
 {
     struct timeval time;
-    long int first;
+    long long int first;
 
     gettimeofday(&time, NULL);
     first = ((time.tv_sec * 1000) + (time.tv_usec / 1000));
     return (first);
 }
 
-long int    ft_chrono(long int last)
+long long int    ft_chrono(long long int last)
 {
     return (ft_gettime() - last);
 }
 
-int     ft_is_dead(long int last_meal, t_philo *philo, long int time_begin)
+int     ft_is_dead(t_philo *philo)
 {
-    long int time;
+    long long int time;
     static int dead = 0;
 
     pthread_mutex_lock(philo->write);
-    time = ft_chrono(last_meal);
+    time = ft_chrono(philo->time[1]);
     if (time > philo->time_to_die)
     {
         philo->is_dead = 1;
         if (!dead)
-            printf("%ld %d is dead\n", ft_chrono(time_begin), philo->id);
+            printf("%lld %d is dead\n", ft_chrono(philo->time[0]), philo->id);
         if (!dead)
         {
-            usleep(philo->time_to_die * 1000 + 1);
+            usleep(philo->time_to_die * 1000);
             dead = 1;
         }
         pthread_mutex_unlock(philo->write);
@@ -39,87 +39,119 @@ int     ft_is_dead(long int last_meal, t_philo *philo, long int time_begin)
     return (0);
 }
 
-int     ft_act(int act, long int last_meal, t_philo *philo)
+int     ft_act(int act, t_philo *philo)
 {
-    int i;
-    int time;
+    long long int i;
+    long long int time;
 
     i = 0;
     if (act == 0)
         time = philo->time_to_eat;
     else
         time = philo->time_to_sleep;
-    while (i < time)
+    long long int time2;
+    time2 = ft_gettime();
+    while (ft_chrono(time2) < time)
     {
         usleep(1000);
         i++;
-        if (ft_chrono(last_meal) > philo->time_to_die)
+        if (ft_chrono(philo->time[1]) > philo->time_to_die)
+        {
             return (1);
+        }
     }
     return (0);
 }
 
-void    ft_is(t_philo *philo, int i, long int time_begin)
+void    ft_is(t_philo *philo, int i)
 {
+    long long int time;
+
+    time = ft_gettime() - philo->time[0];
     pthread_mutex_lock(philo->write);
     if (i == 1)
-        printf("%ld %d has taken a fork\n", ft_chrono(time_begin), philo->id);  
+        printf("%lld %d has taken a fork\n", time, philo->id);  
     else if (i == 2)
-        printf("%ld %d is eating\n", ft_chrono(time_begin), philo->id);
+        printf("%lld %d is eating\n", time, philo->id);
     else if (i == 3)
-        printf("%ld %d is sleeping\n", ft_chrono(time_begin), philo->id);
+        printf("%lld %d is sleeping\n", time, philo->id);
     else if (i == 4)
-        printf("%ld %d is thinking\n", ft_chrono(time_begin), philo->id);
+        printf("%lld %d is thinking\n", time, philo->id);
     pthread_mutex_unlock(philo->write); 
+}
+
+void    ft_status(t_philo *philo, int i)
+{
+    if (i == 0)
+    {
+        pthread_mutex_lock(&philo->left_fork);
+        if (ft_is_dead(philo))
+            return ;
+        ft_is(philo, 1);
+        i++;
+    }
+    else if (i == 1)
+    {
+        pthread_mutex_lock(philo->right_fork);
+        if (ft_is_dead(philo))
+            return ;
+        ft_is(philo, 1);
+        i++;
+    }
+    else if (i == 2)
+    {
+        ft_is(philo, 2);
+        philo->time[1] = ft_gettime();
+        ft_act(0, philo);
+        pthread_mutex_unlock(&philo->left_fork);
+        pthread_mutex_unlock(philo->right_fork);
+        i++;
+    }
+    else if (i == 3)
+    {
+        ft_is(philo, 3);
+        ft_act(1, philo);
+        i++;
+    }
+    else if (i == 4)
+    {
+        if (philo->hungry)
+            philo->hungry--;
+        ft_is(philo, 4);
+        i = 0;
+    }
 }
 
 void    *ft_routine(void *param)
 {
-    t_philo     *philo;
-    long int    time_begin;
-    long int    last_meal;
+    t_philo *philo;
+    int i;
+    int n;
 
+    i = 0;
+    n = -1;
     philo = (t_philo *)param;
-    time_begin = ft_gettime();
-    last_meal = time_begin;
-    while (!philo->is_dead)
+    if (philo->is_last)
     {
-        if (ft_is_dead(last_meal, philo, time_begin))
-            return (NULL);
-        pthread_mutex_lock(&philo->left_fork);
-        if (ft_is_dead(last_meal, philo, time_begin))
-            return (NULL);
-        ft_is(philo, 1, time_begin);
-        if (ft_is_dead(last_meal, philo, time_begin))
-        {
-            pthread_mutex_unlock(&philo->left_fork);
-            return (NULL);
-        }
-        pthread_mutex_lock(philo->right_fork);
-        if (ft_is_dead(last_meal, philo, time_begin))
-        {
-            pthread_mutex_unlock(&philo->left_fork);
-            return (NULL);
-        }
-        ft_is(philo, 1, time_begin);
-        if (ft_is_dead(last_meal, philo, time_begin))
-        {
-            pthread_mutex_unlock(&philo->left_fork);
-            pthread_mutex_unlock(philo->right_fork);
-            return (NULL);
-        }
-        ft_is(philo, 2, time_begin);
-        ft_act(0, last_meal, philo);
-        last_meal = ft_gettime();
-        pthread_mutex_unlock(&philo->left_fork);
-        pthread_mutex_unlock(philo->right_fork);
-        if (ft_is_dead(last_meal, philo, time_begin))
-            return (NULL);
-        ft_is(philo, 3, time_begin);
-        ft_act(1, last_meal, philo);
-        if (ft_is_dead(last_meal, philo, time_begin))
-            return (NULL);
-        ft_is(philo, 4, time_begin);
+        printf("COUCOU\n");
+        pthread_mutex_unlock(philo->write);
+    }
+    else
+    {
+        printf("COUCOU2\n");
+        pthread_mutex_lock(philo->write);
+    }
+    if (philo->id % 2 == 1)
+        usleep(1000);
+    philo->time[1] = ft_gettime();
+    if (philo->hungry)
+        n = 0;
+    while (!philo->is_dead && n < philo->hungry)
+    {
+        ft_status(philo, i);
+        ft_is_dead(philo);
+        i++;
+        i %= 5;
     }
     return (NULL);
 }
@@ -134,18 +166,12 @@ void    ft_philo_start(void *param)
     data = ((t_data *)param);
     th = (pthread_t *)malloc(sizeof(pthread_t) * (data->number));
     pthread_mutex_init(&data->lock, NULL);
+    int k = 0;
     while (i < data->number)
     {
-        pthread_create(th + i, NULL, &ft_routine, (void *)(data->philo + i));
-        //pthread_detach(th[i]);
-        i += 2;
-    }
-    i = 1;
-    while (i < data->number)
-    {
-        pthread_create(th + i, NULL, &ft_routine, (void *)(data->philo + i));
-        //pthread_detach(th[i]);
-        i += 2;
+        k = pthread_create(th + i, NULL, &ft_routine, (void *)(data->philo + i));
+        //printf("WARNING ERRO: %d\n", k);
+        i++;
     }
     i = 0;
     while (i < data->number)
@@ -154,6 +180,7 @@ void    ft_philo_start(void *param)
         pthread_join(th[i], NULL);
         i++;
     }
+    ft_free(data);
 }
 
 void    ft_algo(t_data *data)

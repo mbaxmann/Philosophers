@@ -8,7 +8,7 @@ int main(int ac, char **av)
         ft_putstr_fd("Error: Wrong number of argument\n", 2);
     else
     {
-        data = ft_init(av);
+        data = ft_init(av, ac);
         if (!data)
             return (1);
         else

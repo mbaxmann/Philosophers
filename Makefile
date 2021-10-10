@@ -15,10 +15,10 @@ LINK	=		-pthread
 all:    ${NAME}
 
 .c.o:
-	${CC} ${FLAGS} -c -g $< -o ${<:.c=.o}
+	${CC} ${FLAGS} -c $< -o ${<:.c=.o}
 
 ${NAME}:        ${OBJS}
-		${CC} -g -o ${NAME} ${LINK} ${OBJS}
+		${CC} -o ${NAME} ${LINK} ${OBJS}
 
 clean:
 	${RM} ${OBJS}
