@@ -45,6 +45,7 @@ int    ft_prep_philo(t_data *data, char **av, int ac)
         data->philo[i].time_to_eat = ft_atoi(av[3]);
         data->philo[i].time_to_sleep = ft_atoi(av[4]);
         data->philo[i].write = &data->write;
+        data->philo[i].right_fork = NULL;
         i++;
     }
     return (0);
@@ -87,9 +88,9 @@ int    ft_prep_forks(t_data *data)
     i = 0;
     while (i < data->number)
     {
-        if (i == data->number - 1)
+        if (i == data->number - 1 && data->number > 1)
             data->philo[i].right_fork = &data->philo[0].left_fork;
-        else
+        else if (data->number > 1)
             data->philo[i].right_fork = &data->philo[i + 1].left_fork;
         i++;
     }
@@ -100,19 +101,12 @@ t_data *ft_init(char **av, int ac)
 {
     t_data *data;
     int     err;
-    int     spe;
 
     data = NULL;
     err = 0;
-    spe = 0;
     data = (t_data *)malloc(sizeof(t_data));
     data->philo = NULL;
     data->number = ft_atoi(av[1]);
-    if (data->number == 1)
-    {
-        data->number++;
-        spe++;
-    }
     pthread_mutex_init(&(data->write), NULL);
     err += ft_prep_philo(data, av, ac);
     err += ft_prep_forks(data);
@@ -128,6 +122,5 @@ t_data *ft_init(char **av, int ac)
         ft_putstr_fd("Error: Invalid arguments\n", 2);
         return (NULL);
     }
-    data->number -= spe;
     return (data);
 }

@@ -95,6 +95,11 @@ void    ft_status(t_philo *philo, int i)
     }
     else if (i == 1)
     {
+        if (!philo->right_fork)
+        {
+            usleep(philo->time_to_die * 1000);
+            return ;
+        }
         pthread_mutex_lock(philo->right_fork);
         if (ft_is_dead(philo))
         {
