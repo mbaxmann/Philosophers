@@ -86,7 +86,10 @@ void    ft_status(t_philo *philo, int i)
     {
         pthread_mutex_lock(&philo->left_fork);
         if (ft_is_dead(philo))
+        {
+            pthread_mutex_unlock(&philo->left_fork);
             return ;
+        }
         ft_is(philo, 1);
         i++;
     }
@@ -94,7 +97,11 @@ void    ft_status(t_philo *philo, int i)
     {
         pthread_mutex_lock(philo->right_fork);
         if (ft_is_dead(philo))
+        {
+            pthread_mutex_unlock(&philo->left_fork);
+            pthread_mutex_unlock(philo->right_fork);
             return ;
+        }
         ft_is(philo, 1);
         i++;
     }
@@ -125,22 +132,13 @@ void    ft_status(t_philo *philo, int i)
 void    *ft_routine(void *param)
 {
     t_philo *philo;
+    pthread_t death;
     int i;
     int n;
 
     i = 0;
     n = -1;
     philo = (t_philo *)param;
-    if (philo->is_last)
-    {
-        printf("COUCOU\n");
-        pthread_mutex_unlock(philo->write);
-    }
-    else
-    {
-        printf("COUCOU2\n");
-        pthread_mutex_lock(philo->write);
-    }
     if (philo->id % 2 == 1)
         usleep(1000);
     philo->time[1] = ft_gettime();
@@ -162,7 +160,7 @@ void    ft_philo_start(void *param)
     t_data *data;
     pthread_t *th;
 
-    i = 0;
+    i = 1;
     data = ((t_data *)param);
     th = (pthread_t *)malloc(sizeof(pthread_t) * (data->number));
     pthread_mutex_init(&data->lock, NULL);
@@ -171,7 +169,14 @@ void    ft_philo_start(void *param)
     {
         k = pthread_create(th + i, NULL, &ft_routine, (void *)(data->philo + i));
         //printf("WARNING ERRO: %d\n", k);
-        i++;
+        i += 2;
+    }
+    i = 0;
+    while (i < data->number)
+    {
+        k = pthread_create(th + i, NULL, &ft_routine, (void *)(data->philo + i));
+        //printf("WARNING ERRO: %d\n", k);
+        i += 2;
     }
     i = 0;
     while (i < data->number)
@@ -181,6 +186,7 @@ void    ft_philo_start(void *param)
         i++;
     }
     ft_free(data);
+    free(th);
 }
 
 void    ft_algo(t_data *data)

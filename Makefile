@@ -15,7 +15,7 @@ LINK	=		-pthread
 all:    ${NAME}
 
 .c.o:
-	${CC} ${FLAGS} -c $< -o ${<:.c=.o}
+	${CC} ${FLAGS} -c  -g $< -o ${<:.c=.o}
 
 ${NAME}:        ${OBJS}
 		${CC} -o ${NAME} ${LINK} ${OBJS}
