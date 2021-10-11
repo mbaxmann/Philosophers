@@ -132,7 +132,6 @@ void    ft_status(t_philo *philo, int i)
 void    *ft_routine(void *param)
 {
     t_philo *philo;
-    pthread_t death;
     int i;
     int n;
 
