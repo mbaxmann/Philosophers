@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_utils.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mbaxmann <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/10/12 14:35:14 by user42            #+#    #+#             */
+/*   Updated: 2021/10/12 14:35:26 by user42           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/philosophers.h"
 
 int	ft_isminus(char c, int *i)
@@ -40,14 +52,14 @@ int	ft_atoi(const char *str)
 	return (res * min);
 }
 
-void	ft_putstr_fd(char *s, int fd)
+void	ft_putstr_fd(char *str, int fd)
 {
 	int	i;
 
 	i = 0;
-	if (s)
+	while (str[i])
 	{
-		while (s[i])
-			write(fd, &s[i++], 1);
+		write(fd, &str[i], 1);
+		i++;
 	}
 }
