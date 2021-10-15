@@ -54,12 +54,40 @@ int	ft_atoi(const char *str)
 
 void	ft_putstr_fd(char *str, int fd)
 {
-	int	i;
+	write(fd, str, ft_size(str));
+}
 
-	i = 0;
-	while (str[i])
+void	ft_print(int mode, long long int time, t_philo *philo)
+{
+	char *buffer;
+
+	buffer = ft_itoa(time, 0);
+	buffer = ft_strjoin(buffer, ft_strdup(" "));
+	buffer = ft_strjoin(buffer, ft_itoa((long long int)philo->id, 0));
+	if (mode == 1)
 	{
-		write(fd, &str[i], 1);
-		i++;
+		buffer = ft_strjoin(buffer, ft_strdup(" has taken a fork\n"));
+		ft_putstr_fd(buffer, 1);
 	}
+	else if (mode == 2)
+	{
+		buffer = ft_strjoin(buffer, ft_strdup(" is eating\n"));
+		ft_putstr_fd(buffer, 1);
+	}
+	else if (mode == 3)
+	{
+		buffer = ft_strjoin(buffer, ft_strdup(" is sleeping\n"));
+		ft_putstr_fd(buffer, 1);
+	}
+	else if (mode == 4)
+	{
+		buffer = ft_strjoin(buffer, ft_strdup(" is thinking\n"));
+		ft_putstr_fd(buffer, 1);
+	}
+	else if (mode == 5)
+	{
+		buffer = ft_strjoin(buffer, ft_strdup(" is dead\n"));
+		ft_putstr_fd(buffer, 1);
+	}
+	free(buffer);
 }

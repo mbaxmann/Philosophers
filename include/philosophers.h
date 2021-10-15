@@ -24,7 +24,7 @@ typedef struct s_philo
 {
 	int				id;
 	int				is_dead;
-	int				is_last;
+	int				round;
 	int				hungry;
 	int				time_to_die;
 	int				time_to_eat;
@@ -33,6 +33,7 @@ typedef struct s_philo
 	pthread_mutex_t	left_fork;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*write;
+	pthread_mutex_t	lock;
 }				t_philo;
 
 typedef struct s_data
@@ -51,11 +52,12 @@ void			ft_algo(t_data *data);
 void			*ft_routine(void *param);
 void			ft_free(t_data *data);
 void			ft_is(t_philo *philo, int i);
-void			ft_usleep(int time);
+void			ft_usleep(long long int time);
 void			ft_status(t_philo *philo, int i);
 void			ft_free(t_data *data);
 void			ft_philo_start(void *param);
 void			ft_prep_philo_2(t_data *data, char **av, int i);
+void			ft_print(int mode, long long int time, t_philo *philo);
 int				main(int ac, char **av);
 int				ft_status_p1(t_philo *philo, int i);
 int				ft_status_p2(t_philo *philo, int i);
@@ -67,7 +69,11 @@ int				ft_isminus(char c, int *i);
 int				ft_check_value(t_data *data, char **av, int ac);
 int				ft_is_dead(t_philo *philo);
 int				ft_act(int act, t_philo *philo);
+int				ft_size(char const *str);
 long long int	ft_gettime(void);
 long long int	ft_chrono(long long int last);
+char			*ft_strjoin(char const *s1, char const *s2);
+char			*ft_strdup(const char *s1);
+char			*ft_itoa(long long int n, char m);
 
 #endif
