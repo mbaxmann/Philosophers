@@ -21,6 +21,7 @@ void	ft_prep_philo_2(t_data *data, char **av, int i)
 	data->philo[i].time_to_sleep = ft_atoi(av[4]);
 	data->philo[i].write = &data->write;
 	data->philo[i].right_fork = NULL;
+	pthread_mutex_init(&data->philo[i].lock, NULL);
 }
 
 int	ft_prep_philo(t_data *data, char **av, int ac)
@@ -38,9 +39,7 @@ int	ft_prep_philo(t_data *data, char **av, int ac)
 		if (ac == 6)
 			data->philo[i].hungry = ft_atoi(av[5]);
 		data->philo[i].is_dead = 0;
-		data->philo[i].is_last = 0;
-		if (i == data->number - 1)
-			data->philo[i].is_last = 1;
+		data->philo[i].round = 0;
 		ft_prep_philo_2(data, av, i);
 		i++;
 	}
@@ -104,6 +103,7 @@ t_data	*ft_init(char **av, int ac)
 	data->philo = NULL;
 	data->number = ft_atoi(av[1]);
 	pthread_mutex_init(&(data->write), NULL);
+	pthread_mutex_init(&data->lock, NULL);
 	err += ft_prep_philo(data, av, ac);
 	err += ft_prep_forks(data);
 	if (err)

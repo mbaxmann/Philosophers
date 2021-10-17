@@ -37,10 +37,10 @@ int	ft_settr(int nbr, int x)
 		return (nbr);
 }
 
-void	ft_convert(char *res, long long int nbr, long long int pow, char m)
+void	ft_convert(char *res, long int nbr, long int pow, char m)
 {
 	int				i;
-	unsigned long long int	tr;
+	unsigned long int	tr;
 
 	i = 0;
 	if (m == 'd')
@@ -64,9 +64,9 @@ void	ft_convert(char *res, long long int nbr, long long int pow, char m)
 	ft_reverse_tab(res);
 }
 
-int	ft_power(unsigned long long int tr)
+int	ft_power(unsigned long int tr)
 {
-	long long int	pow;
+	long int	pow;
 
 	pow = 0;
 	while (tr)
@@ -77,11 +77,11 @@ int	ft_power(unsigned long long int tr)
 	return (pow);
 }
 
-char	*ft_itoa(long long int n, char m)
+char	*ft_itoa(long int n, char m)
 {
-	long long int				x;
-	unsigned long long int	tr;
-	long long int				pow;
+	long int				x;
+	unsigned long int	tr;
+	long int				pow;
 	char			*res;
 
 	if (m == 'd')

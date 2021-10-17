@@ -57,13 +57,13 @@ void	ft_putstr_fd(char *str, int fd)
 	write(fd, str, ft_size(str));
 }
 
-void	ft_print(int mode, long long int time, t_philo *philo)
+void	ft_print(int mode, long int time, t_philo *philo)
 {
 	char *buffer;
 
 	buffer = ft_itoa(time, 0);
 	buffer = ft_strjoin(buffer, ft_strdup(" "));
-	buffer = ft_strjoin(buffer, ft_itoa((long long int)philo->id, 0));
+	buffer = ft_strjoin(buffer, ft_itoa((long int)philo->id, 0));
 	if (mode == 1)
 	{
 		buffer = ft_strjoin(buffer, ft_strdup(" has taken a fork\n"));
