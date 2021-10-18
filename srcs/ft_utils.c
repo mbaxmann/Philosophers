@@ -88,6 +88,7 @@ void	ft_print(int mode, long int time, t_philo *philo)
 	{
 		buffer = ft_strjoin(buffer, ft_strdup(" is dead\n"));
 		ft_putstr_fd(buffer, 1);
+		ft_msleep(philo->time_to_die);
 	}
 	free(buffer);
 }

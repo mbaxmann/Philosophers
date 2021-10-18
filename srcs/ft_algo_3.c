@@ -38,7 +38,6 @@ int	ft_is_dead(t_philo *philo)
 		if (!dead)
 		{
 			ft_print(5, ft_chrono(philo->time[0]), philo);
-			ft_msleep(philo->time_to_die);
 			dead = 1;
 		}
 		pthread_mutex_unlock(philo->write);

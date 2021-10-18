@@ -16,10 +16,10 @@ void	ft_is(t_philo *philo, int i)
 {
 	long int	time;
 
-	time = ft_gettime() - philo->time[0];
 	if (!ft_is_dead(philo))
 	{
 		pthread_mutex_lock(philo->write);
+		time = ft_gettime() - philo->time[0];
 		ft_print(i, time, philo);
 		pthread_mutex_unlock(philo->write);
 	}
@@ -73,10 +73,11 @@ void	ft_status(t_philo *philo)
 {
 	int i;
 
-	if ((philo->id + philo->round) % 2 == 0)
-		i = 1;
+	if ((philo->id + philo->round) % 2 == 1)
+		i = 0;
 	else
-		i = 0;	
+		i = 1;	
 	ft_status_p1(philo, i);
-	ft_status_p2(philo);
+	if (!philo->is_dead)
+		ft_status_p2(philo);
 }

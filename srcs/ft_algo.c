@@ -17,7 +17,8 @@ int	ft_act(long int time, t_philo *philo)
 	if (ft_chrono(philo->time[1]) + time >= philo->time_to_die)
 	{
 		ft_msleep(philo->time_to_die - ft_chrono(philo->time[1]));
-		ft_is_dead(philo);
+		philo->is_dead = 1;
+		//ft_is_dead(philo);
 		return (1);
 	}
 	else
@@ -49,13 +50,13 @@ void	*ft_routine(void *param)
 
 	n = -1;
 	philo = (t_philo *)param;
-	philo->time[1] = ft_gettime();
 	if (philo->hungry)
 		n = 0;
 	while (!philo->is_dead && n < philo->hungry)
 	{
 		ft_status(philo);
 	}
+	ft_is_dead(philo);
 	return (NULL);
 }
 
@@ -71,7 +72,13 @@ void	ft_philo_start(void *param)
 	while (i < data->number)
 	{
 		pthread_create(th + i, NULL, &ft_routine, (void *)(data->philo + i));
-		i++;
+		i += 2;
+	}
+	i = 1;
+	while (i < data->number)
+	{
+		pthread_create(th + i, NULL, &ft_routine, (void *)(data->philo + i));
+		i += 2;
 	}
 	i = -1;
 	while (++i < data->number)
