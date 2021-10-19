@@ -6,7 +6,7 @@
 /*   By: mbaxmann <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/12 14:33:54 by user42            #+#    #+#             */
-/*   Updated: 2021/10/12 15:17:43 by user42           ###   ########.fr       */
+/*   Updated: 2021/10/19 19:38:29 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,9 @@ int	ft_status_p1(t_philo *philo, int i)
 {
 	if (i == 0)
 	{
+		if (ft_is_dead(philo))
+                        return (1);
+
 		pthread_mutex_lock(&philo->left_fork);
 		if (ft_is(philo, 1))
 			pthread_mutex_unlock(philo->right_fork);
@@ -47,6 +50,9 @@ int	ft_status_p1(t_philo *philo, int i)
 	}
 	else if (i == 1)
 	{
+		if (ft_is_dead(philo))
+                        return (1);
+
 		pthread_mutex_lock(philo->right_fork);
 		if (ft_is(philo, 1))
 			pthread_mutex_unlock(philo->right_fork);
@@ -62,7 +68,11 @@ int	ft_status_p2(t_philo *philo)
 	ft_is(philo, 2);
 	philo->time[1] = ft_gettime();
 	if (ft_act(philo->time_to_eat, philo))
+	{
+		pthread_mutex_unlock(&philo->left_fork);
+		pthread_mutex_unlock(philo->right_fork);
 		return (1);
+	}
 	pthread_mutex_unlock(&philo->left_fork);
 	pthread_mutex_unlock(philo->right_fork);
 	ft_is(philo, 3);
