@@ -26,20 +26,20 @@ typedef struct s_philo
 	int				is_dead;
 	int				round;
 	int				hungry;
+	int				number;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
-	long int	time[2];
+	long int		time[2];
 	pthread_mutex_t	left_fork;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	*write;
-	pthread_mutex_t	lock;
+	pthread_mutex_t	*lock;
 }				t_philo;
 
 typedef struct s_data
 {
 	int				number;
-	int				current;
 	struct timeval	time_begin;
 	t_philo			*philo;
 	pthread_mutex_t	write;
@@ -48,16 +48,16 @@ typedef struct s_data
 
 t_data			*ft_init(char **av, int ac);
 void			ft_putstr_fd(char *s, int fd);
-void			ft_algo(t_data *data);
 void			*ft_routine(void *param);
 void			ft_free(t_data *data);
-void			ft_is(t_philo *philo, int i);
+int				ft_is(t_philo *philo, int i);
 void			ft_msleep(long int time);
 void			ft_status(t_philo *philo);
 void			ft_free(t_data *data);
 void			ft_philo_start(void *param);
 void			ft_prep_philo_2(t_data *data, char **av, int i);
-void			ft_print(int mode, long int time, t_philo *philo);
+void			ft_print(int mode, long int time, t_philo *philo, int *dead);
+void			ft_unlock(t_philo *philo);
 int				main(int ac, char **av);
 int				ft_status_p1(t_philo *philo, int i);
 int				ft_status_p2(t_philo *philo);
@@ -70,7 +70,6 @@ int				ft_is_dead(t_philo *philo);
 int				ft_act(long int time, t_philo *philo);
 int				ft_size(char const *str);
 long int		ft_gettime(void);
-long int		ft_chrono(long int last);
 char			*ft_strjoin(char const *s1, char const *s2);
 char			*ft_strdup(const char *s1);
 char			*ft_itoa(long int n, char m);

@@ -14,14 +14,23 @@
 
 void	ft_prep_philo_2(t_data *data, char **av, int i)
 {
-	data->philo[i].time[0] = ft_gettime();
-	data->philo[i].time[1] = ft_gettime();
+	static long int	time = 0;
+	static int		k = 0;
+
+	if (k == 0)
+	{
+		time = ft_gettime();
+		k = 1;
+	}
+	data->philo[i].time[0] = time;
+	data->philo[i].time[1] = time;
 	data->philo[i].time_to_die = ft_atoi(av[2]);
 	data->philo[i].time_to_eat = ft_atoi(av[3]);
 	data->philo[i].time_to_sleep = ft_atoi(av[4]);
 	data->philo[i].write = &data->write;
 	data->philo[i].right_fork = NULL;
-	pthread_mutex_init(&data->philo[i].lock, NULL);
+	data->philo[i].lock = &data->lock;
+	data->philo[i].number = data->number;
 }
 
 int	ft_prep_philo(t_data *data, char **av, int ac)

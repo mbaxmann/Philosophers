@@ -6,7 +6,7 @@
 /*   By: mbaxmann <marvin@42.fr>                    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/10/12 14:33:35 by user42            #+#    #+#             */
-/*   Updated: 2021/10/12 15:16:33 by user42           ###   ########.fr       */
+/*   Updated: 2021/10/19 18:24:11 by user42           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,11 +14,13 @@
 
 int	ft_act(long int time, t_philo *philo)
 {
-	if (ft_chrono(philo->time[1]) + time >= philo->time_to_die)
+	long int	time2;
+
+	time2 = (ft_gettime() - philo->time[1]);
+	if (time2 + time >= philo->time_to_die)
 	{
-		ft_msleep(philo->time_to_die - ft_chrono(philo->time[1]));
+		ft_msleep(philo->time_to_die - time2);
 		philo->is_dead = 1;
-		//ft_is_dead(philo);
 		return (1);
 	}
 	else
@@ -28,18 +30,14 @@ int	ft_act(long int time, t_philo *philo)
 
 void	ft_msleep(long int time)
 {
-	long int curr;
-	long int time2;
+	long int	curr;
+	long int	time2;
 
 	curr = ft_gettime();
-	time2 = time / 2;
-	time2 *= 1000;
-	while (ft_chrono(curr) < time)
+	time2 = 50;
+	while ((ft_gettime() - curr) < time)
 	{
 		usleep(time2);
-		time2 /= 2;
-		if (time2 < 1000)
-			time2 = 1000;
 	}
 }
 
@@ -50,6 +48,8 @@ void	*ft_routine(void *param)
 
 	n = -1;
 	philo = (t_philo *)param;
+	if (philo->id % 2 == 0)
+		usleep(20);
 	if (philo->hungry)
 		n = 0;
 	while (!philo->is_dead && n < philo->hungry)
@@ -72,26 +72,14 @@ void	ft_philo_start(void *param)
 	while (i < data->number)
 	{
 		pthread_create(th + i, NULL, &ft_routine, (void *)(data->philo + i));
-		i += 2;
+		i++;
 	}
-	i = 1;
+	i = 0;
 	while (i < data->number)
 	{
-		pthread_create(th + i, NULL, &ft_routine, (void *)(data->philo + i));
-		i += 2;
-	}
-	i = -1;
-	while (++i < data->number)
 		pthread_join(th[i], NULL);
+		i++;
+	}
 	ft_free(data);
 	free(th);
-}
-
-void	ft_algo(t_data *data)
-{
-	int	i;
-
-	i = 0;
-	data->current = 0;
-	ft_philo_start(data);
 }

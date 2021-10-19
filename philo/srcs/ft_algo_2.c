@@ -12,17 +12,20 @@
 
 #include "../include/philosophers.h"
 
-void	ft_is(t_philo *philo, int i)
+int	ft_is(t_philo *philo, int i)
 {
 	long int	time;
 
 	if (!ft_is_dead(philo))
 	{
-		pthread_mutex_lock(philo->write);
 		time = ft_gettime() - philo->time[0];
-		ft_print(i, time, philo);
+		pthread_mutex_lock(philo->write);
+		ft_print(i, time, philo, NULL);
 		pthread_mutex_unlock(philo->write);
 	}
+	else
+		return (1);
+	return (0);
 }
 
 int	ft_status_p1(t_philo *philo, int i)
@@ -30,31 +33,34 @@ int	ft_status_p1(t_philo *philo, int i)
 	if (i == 0)
 	{
 		pthread_mutex_lock(&philo->left_fork);
-		ft_is(philo, 1);
+		if (ft_is(philo, 1))
+			pthread_mutex_unlock(philo->right_fork);
 		if (!philo->right_fork)
 		{
 			ft_msleep(philo->time_to_die);
-			pthread_mutex_unlock(&philo->left_fork);
 			ft_is_dead(philo);
 			return (1);
 		}
 		pthread_mutex_lock(philo->right_fork);
-		ft_is(philo, 1);
+		if (ft_is(philo, 1))
+			ft_unlock(philo);
 	}
 	else if (i == 1)
 	{
 		pthread_mutex_lock(philo->right_fork);
-		ft_is(philo, 1);
+		if (ft_is(philo, 1))
+			pthread_mutex_unlock(philo->right_fork);
 		pthread_mutex_lock(&philo->left_fork);
-		ft_is(philo, 1);
+		if (ft_is(philo, 1))
+			ft_unlock(philo);
 	}
 	return (0);
 }
 
 int	ft_status_p2(t_philo *philo)
 {
-	philo->time[1] = ft_gettime();
 	ft_is(philo, 2);
+	philo->time[1] = ft_gettime();
 	if (ft_act(philo->time_to_eat, philo))
 		return (1);
 	pthread_mutex_unlock(&philo->left_fork);
@@ -64,19 +70,19 @@ int	ft_status_p2(t_philo *philo)
 		return (1);
 	if (philo->hungry)
 		philo->hungry--;
-	philo->round++;
+	(philo->round)++;
 	ft_is(philo, 4);
 	return (0);
 }
 
 void	ft_status(t_philo *philo)
 {
-	int i;
+	int	i;
 
 	if ((philo->id + philo->round) % 2 == 1)
 		i = 0;
 	else
-		i = 1;	
+		i = 1;
 	ft_status_p1(philo, i);
 	if (!philo->is_dead)
 		ft_status_p2(philo);

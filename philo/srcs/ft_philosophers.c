@@ -45,7 +45,7 @@ int	main(int ac, char **av)
 		if (!data)
 			return (1);
 		else
-			ft_algo(data);
+			ft_philo_start(data);
 	}
 	return (0);
 }

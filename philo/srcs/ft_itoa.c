@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   ft_itoa.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: mbaxmann <marvin@42.fr>                    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2021/10/18 17:41:11 by user42            #+#    #+#             */
+/*   Updated: 2021/10/18 17:41:23 by user42           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../include/philosophers.h"
 
 void	ft_reverse_tab(char *tab)
@@ -39,7 +51,7 @@ int	ft_settr(int nbr, int x)
 
 void	ft_convert(char *res, long int nbr, long int pow, char m)
 {
-	int				i;
+	int					i;
 	unsigned long int	tr;
 
 	i = 0;
@@ -80,9 +92,9 @@ int	ft_power(unsigned long int tr)
 char	*ft_itoa(long int n, char m)
 {
 	long int				x;
-	unsigned long int	tr;
+	unsigned long int		tr;
 	long int				pow;
-	char			*res;
+	char					*res;
 
 	if (m == 'd')
 		tr = ft_settr(n, 0);
